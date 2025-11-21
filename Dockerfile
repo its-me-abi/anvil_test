@@ -11,11 +11,6 @@ RUN apt-get update && \
 # Optional: set python3 as default "python"
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
-# Default work directory
-WORKDIR /app
-
-# Default command — just open shell (no Python execution)
-CMD ["bash"]
 
 # 1. Install necessary dependencies (wget, gnupg, software-properties-common) 
 #    and update packages in a single 'RUN' layer.
@@ -49,6 +44,14 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
 
 # 4. Install Anvil
 RUN pip install anvil-app-server
+RUN useradd -m anvil
+
+# Create directory where Anvil stores the JAR file
+RUN mkdir -p /home/anvil/.anvil && \
+    chown -R anvil:anvil /home/anvil
+
+USER anvil
+WORKDIR /home/anvil
 
 # 5. Set up Anvil user and data directories
 RUN mkdir /anvil-data && \
@@ -60,7 +63,7 @@ ENV ANVIL_DATA_DIR="/anvil-data"
 ENV ANVIL_PORT="443"
 
 VOLUME /apps /anvil-data
-WORKDIR /apps
+WORKDIR /
 
 # 6. Switch to the non-root user
 USER anvil

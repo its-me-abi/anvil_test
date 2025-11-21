@@ -2,55 +2,72 @@ FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Python only (no development tools)
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        python3 python3-pip python3-venv ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+# --------------------------
+# Install dependencies
+# --------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip python3-venv \
+    wget gnupg ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-# Optional: set python3 as default "python"
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
-
-# 1. Install necessary dependencies (wget, gnupg, software-properties-common) 
-#    and update packages in a single 'RUN' layer.
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    wget \
-    gnupg \
-    software-properties-common \
-    && rm -rf /var/lib/apt/lists/*
-
-# --- Install Amazon Corretto 8 (Java 8) ---
-# 2. Use the correct, modern way to add a GPG key: 'curl/wget | gpg --dearmor | tee'
-#    'apt-key add' is deprecated.
-#    Note: 'software-properties-common' (installed above) is needed for 'add-apt-repository'.
-RUN wget -O- https://apt.corretto.aws/corretto.key | gpg --dearmor | tee /etc/apt/keyrings/corretto.gpg > /dev/null && \
-    echo "deb [signed-by=/etc/apt/keyrings/corretto.gpg] https://apt.corretto.aws stable main" | tee /etc/apt/sources.list.d/corretto.list && \
+# --------------------------
+# Install Amazon Corretto 8
+# --------------------------
+RUN wget -O- https://apt.corretto.aws/corretto.key \
+    | gpg --dearmor \
+    | tee /etc/apt/keyrings/corretto.gpg > /dev/null && \
+    echo "deb [signed-by=/etc/apt/keyrings/corretto.gpg] https://apt.corretto.aws stable main" \
+    | tee /etc/apt/sources.list.d/corretto.list && \
     apt-get update
 
-# 3. Install Google Chrome (required for Anvil's PDF/image generation) and Java.
-#    Run 'apt-get update' again to ensure the Corretto package list is fresh.
-#    Use --no-install-recommends to keep the image size down.
+# --------------------------
+# Install Chrome (Render requires no-sandbox)
+# --------------------------
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends \
     ./google-chrome-stable_current_amd64.deb \
     java-1.8.0-amazon-corretto-jdk \
-    ghostscript \
-    && rm google-chrome-stable_current_amd64.deb \
-    && rm -rf /var/lib/apt/lists/*
+    ghostscript && \
+    rm google-chrome-stable_current_amd64.deb && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN pip install --break-system-packages  anvil-app-server
+# --------------------------
+# Install Anvil App Server
+# --------------------------
+RUN pip3 install --break-system-packages anvil-app-server
 
+# --------------------------
+# Create anvil user + dirs
+# --------------------------
+RUN useradd -m anvil && \
+    mkdir -p /home/anvil/.anvil /anvil-data && \
+    chown -R anvil:anvil /home/anvil /anvil-data
 
-ENV ANVIL_PORT="443"
+# --------------------------
+# Copy your Anvil app
+# --------------------------
+WORKDIR /home/anvil/app
+COPY . /home/anvil/app
+RUN chown -R anvil:anvil /home/anvil/app
 
-# 6. Switch to the non-root user
+# --------------------------
+# Switch to non-root user
+# --------------------------
 USER anvil
+
+# --------------------------
+# Disable Chrome sandbox for Render
+# --------------------------
+ENV CHROME_ARGS="--no-sandbox --disable-dev-shm-usage"
+ENV ANVIL_PORT=443
 
 EXPOSE 443
 
-# 7. Use the correct ENTRYPOINT and CMD format.
-#    CMD is used for arguments to the ENTRYPOINT.
+# --------------------------
+# ENTRYPOINT (correct)
+# --------------------------
 ENTRYPOINT ["anvil-app-server"]
-CMD ["--data-dir", "./anvil-data", "--port", "443", "--origin", "*", "--letsencrypt-staging", "--app", "."]
+
+CMD ["--origin", "*", "--app", "/home/anvil/app"]

@@ -36,7 +36,6 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
 # --------------------------
 # Install Anvil App Server
 # --------------------------
-RUN pip3 install --break-system-packages anvil-app-server
 
 # --------------------------
 # Create anvil user + dirs
@@ -57,17 +56,17 @@ RUN chown -R anvil:anvil /home/anvil/app
 # --------------------------
 USER anvil
 
-# --------------------------
-# Disable Chrome sandbox for Render
-# --------------------------
+RUN pip3 install --break-system-packages anvil-app-server
+
 ENV CHROME_ARGS="--no-sandbox --disable-dev-shm-usage"
 ENV ANVIL_PORT=443
 
 EXPOSE 443
 
-# --------------------------
-# ENTRYPOINT (correct)
-# --------------------------
 ENTRYPOINT ["anvil-app-server"]
 
-CMD ["--origin", "*", "--app", "/home/anvil/app", "--no-postgres"]
+CMD ["--port, "3030", "--app", "/home/anvil/app"]
+
+
+
+

@@ -39,10 +39,7 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
     ghostscript \
     && rm google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
-    
-# --- Anvil Setup ---
 
-# 4. Install Anvil
 RUN pip install anvil-app-server
 RUN useradd -m anvil
 
@@ -50,19 +47,17 @@ RUN useradd -m anvil
 RUN mkdir -p /home/anvil/.anvil && \
     chown -R anvil:anvil /home/anvil
 
-USER anvil
-WORKDIR /home/anvil
 
 # 5. Set up Anvil user and data directories
-RUN mkdir /anvil-data && \
+RUN mkdir ./anvil-data && \
     useradd --no-create-home --shell /bin/false anvil && \
-    chown -R anvil:anvil /anvil-data
+    chown -R anvil:anvil ./anvil-data
 
 # Set environment variables for better logging/operation
-ENV ANVIL_DATA_DIR="/anvil-data"
+ENV ANVIL_DATA_DIR="./anvil-data"
 ENV ANVIL_PORT="443"
 
-VOLUME /apps /anvil-data
+VOLUME /apps ./anvil-data
 WORKDIR /
 
 # 6. Switch to the non-root user

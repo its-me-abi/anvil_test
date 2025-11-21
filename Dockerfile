@@ -50,7 +50,6 @@ RUN mkdir -p /home/anvil/.anvil && \
 
 # 5. Set up Anvil user and data directories
 RUN mkdir ./anvil-data && \
-    useradd --no-create-home --shell /bin/false anvil && \
     chown -R anvil:anvil ./anvil-data
 
 # Set environment variables for better logging/operation

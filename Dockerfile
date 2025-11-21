@@ -41,7 +41,7 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install anvil-app-server
-RUN useradd -m anvil
+
 
 # Create directory where Anvil stores the JAR file
 RUN mkdir -p /home/anvil/.anvil && \

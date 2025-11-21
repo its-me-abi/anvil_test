@@ -70,4 +70,4 @@ EXPOSE 443
 # --------------------------
 ENTRYPOINT ["anvil-app-server"]
 
-CMD ["--origin", "*", "--app", "/home/anvil/app"]
+CMD ["--origin", "*", "--app", "/home/anvil/app", "--no-postgres"]

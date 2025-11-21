@@ -43,21 +43,10 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
 RUN pip install anvil-app-server
 
 
-# Create directory where Anvil stores the JAR file
-RUN mkdir -p /home/anvil/.anvil && \
-    chown -R anvil:anvil /home/anvil
-
-
-# 5. Set up Anvil user and data directories
-RUN mkdir ./anvil-data && \
-    chown -R anvil:anvil ./anvil-data
-
-# Set environment variables for better logging/operation
-ENV ANVIL_DATA_DIR="./anvil-data"
 ENV ANVIL_PORT="443"
 
 VOLUME /apps ./anvil-data
-WORKDIR /
+WORKDIR /apps
 
 # 6. Switch to the non-root user
 USER anvil
@@ -67,4 +56,4 @@ EXPOSE 443
 # 7. Use the correct ENTRYPOINT and CMD format.
 #    CMD is used for arguments to the ENTRYPOINT.
 ENTRYPOINT ["anvil-app-server"]
-CMD ["--data-dir", "/anvil-data", "--port", "443", "--origin", "https://[your_domain]", "--letsencrypt-staging", "--app", "."]
+CMD ["--data-dir", "./anvil-data", "--port", "443", "--origin", "*", "--letsencrypt-staging", "--app", "."]

@@ -65,7 +65,7 @@ EXPOSE 443
 
 ENTRYPOINT ["anvil-app-server"]
 
-CMD ["--port", "3030", "--app", "/home/anvil/app"]
+CMD ["--port", "3030", "--app", "/home/anvil/app" , "--database","jdbc:postgresql://dpg-d4g9n4ufpa7c73ahs2l0-a:5432/mydb_jsg0?user=mydbuser&password=lVZcmkDpMDVBQNHQ4o95aTNjfSaBfljx"]
 
 
 

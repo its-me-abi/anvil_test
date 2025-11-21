@@ -28,7 +28,7 @@ RUN wget -O- https://apt.corretto.aws/corretto.key \
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
     apt-get install -y --no-install-recommends \
     ./google-chrome-stable_current_amd64.deb \
-    java-1.8.0-amazon-corretto-jdk \
+    java-21-amazon-corretto-jdk \
     ghostscript && \
     rm google-chrome-stable_current_amd64.deb && \
     rm -rf /var/lib/apt/lists/*
@@ -65,7 +65,7 @@ EXPOSE 443
 
 ENTRYPOINT ["anvil-app-server"]
 
-CMD ["--port, "3030", "--app", "/home/anvil/app"]
+CMD ["--port", "3030", "--app", "/home/anvil/app"]
 
 
 

@@ -1,8 +1,9 @@
 FROM python:3.10-slim
 
-# Install system dependencies
+# Install system dependencies + Java (OpenJDK 11)
 RUN apt-get update && apt-get install -y \
-    build-essential openjdk-11-jre-headless \
+    build-essential \
+    openjdk-11-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Anvil App Server

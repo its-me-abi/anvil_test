@@ -40,7 +40,7 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
     && rm google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install anvil-app-server
+RUN pip install --break-system-packages  anvil-app-server
 
 
 ENV ANVIL_PORT="443"

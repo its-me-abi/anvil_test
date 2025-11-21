@@ -1,18 +1,29 @@
-FROM python:3.10-slim
+FROM python:3
 
-# Fix missing repo metadata and install Java
-RUN sed -i 's|deb.debian.org|deb.debian.org|g' /etc/apt/sources.list && \
-    apt-get update && apt-get install -y \
-        build-essential \
-        default-jre-headless \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get -yyy update && apt-get -yyy install software-properties-common && \
+    wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
+    add-apt-repository 'deb https://apt.corretto.aws stable main'
 
-# Install Anvil App Server
-RUN pip install anvil-app-server
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    (dpkg -i google-chrome-stable_current_amd64.deb || apt install -y --fix-broken) && \
+    rm google-chrome-stable_current_amd64.deb 
 
-WORKDIR /app
-COPY . /app
 
-EXPOSE 3030
+RUN apt-get -yyy update && apt-get -yyy install java-1.8.0-amazon-corretto-jdk ghostscript
 
-CMD ["anvil-app-server", "--app", ".", "--port", "3030", "--origin", "*"]
+COPY ./requirements.txt ./
+RUN pip install -r requirements.txt
+RUN anvil-app-server || true
+
+VOLUME /apps
+WORKDIR /apps
+
+RUN mkdir /anvil-data
+
+RUN useradd anvil
+RUN chown -R anvil:anvil /anvil-data
+USER anvil
+
+#ENTRYPOINT ["anvil-app-server", "--data-dir", "/anvil-data"]
+
+#CMD ["--app", "MainApp"]

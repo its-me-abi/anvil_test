@@ -45,9 +45,6 @@ RUN pip install anvil-app-server
 
 ENV ANVIL_PORT="443"
 
-VOLUME /apps ./anvil-data
-WORKDIR /apps
-
 # 6. Switch to the non-root user
 USER anvil
 

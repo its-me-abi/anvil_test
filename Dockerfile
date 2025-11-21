@@ -1,4 +1,4 @@
-FROM ubuntu:22.04-minimal
+FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 

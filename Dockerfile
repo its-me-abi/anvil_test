@@ -44,6 +44,7 @@ RUN useradd -m anvil && \
     mkdir -p /home/anvil/.anvil /anvil-data && \
     chown -R anvil:anvil /home/anvil /anvil-data
 
+RUN pip3 install --break-system-packages anvil-app-server
 # --------------------------
 # Copy your Anvil app
 # --------------------------
@@ -56,7 +57,6 @@ RUN chown -R anvil:anvil /home/anvil/app
 # --------------------------
 USER anvil
 
-RUN pip3 install --break-system-packages anvil-app-server
 
 ENV CHROME_ARGS="--no-sandbox --disable-dev-shm-usage"
 ENV ANVIL_PORT=443

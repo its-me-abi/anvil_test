@@ -15,6 +15,5 @@ RUN useradd anvil
 RUN chown -R anvil:anvil /anvil-data
 USER anvil
 
-ENTRYPOINT ["anvil-app-server",".", "--data-dir", "/anvil-data"]
+ENTRYPOINT ["anvil-app-server","--app",".", "--data-dir", "/anvil-data"]
 
-CMD ["--app", "MainApp"]

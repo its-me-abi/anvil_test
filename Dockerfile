@@ -1,6 +1,21 @@
-# Use a Debian-based image for better compatibility with apt-get commands.
-# python:3 is an alias for python:3.x-bullseye (Debian 11) or python:3.x-bookworm (Debian 12).
-FROM python:3
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Python only (no development tools)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3 python3-pip python3-venv ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Optional: set python3 as default "python"
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# Default work directory
+WORKDIR /app
+
+# Default command — just open shell (no Python execution)
+CMD ["bash"]
 
 # 1. Install necessary dependencies (wget, gnupg, software-properties-common) 
 #    and update packages in a single 'RUN' layer.

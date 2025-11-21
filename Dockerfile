@@ -17,7 +17,6 @@ RUN anvil-app-server || true
 VOLUME /apps
 WORKDIR /apps
 
-COPY MyApp /apps/CustomAppName
 RUN mkdir /anvil-data
 
 RUN useradd anvil
@@ -27,4 +26,4 @@ USER anvil
 EXPOSE 443
 
 ENTRYPOINT ["anvil-app-server", "--data-dir", "/anvil-data", "--port", "443", "--origin", "https://[you_domain]", "--letsencrypt-staging"]
-CMD ["--app", "CustomAppName"]
+CMD ["--app", "."]

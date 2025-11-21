@@ -1,15 +1,15 @@
 FROM python:3.10-slim
 
-# Install system dependencies + Java (OpenJDK 11)
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    openjdk-11-jre-headless \
+# Fix missing repo metadata and install Java
+RUN sed -i 's|deb.debian.org|deb.debian.org|g' /etc/apt/sources.list && \
+    apt-get update && apt-get install -y \
+        build-essential \
+        default-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Anvil App Server
 RUN pip install anvil-app-server
 
-# Copy your Anvil app
 WORKDIR /app
 COPY . /app
 

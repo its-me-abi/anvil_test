@@ -1,6 +1,6 @@
 FROM python:3
 
-RUN apt-get -yyy update  \
+RUN apt-get -yyy update && \
     wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
     add-apt-repository 'deb https://apt.corretto.aws stable main'
 

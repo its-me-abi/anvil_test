@@ -1,6 +1,6 @@
 FROM python:3
 
-RUN apt-get -yyy update && apt-get -yyy install software-properties-common && \
+RUN apt-get -yyy update && apt-get -yyy install  \
     wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
     add-apt-repository 'deb https://apt.corretto.aws stable main'
 
